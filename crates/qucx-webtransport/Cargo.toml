@@ -1,0 +1,11 @@
+[package]
+name = "qucx-webtransport"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+qucx-core = { path = "../qucx-core" }
+tokio = { version = "1", features = ["full"] }
+bytes = "1"
+async-trait = "0.1"
+wtransport = { version = "0.7", features = ["self-signed"] }

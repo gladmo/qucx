@@ -14,3 +14,6 @@ pub use qucx_kcp::KcpPlugin;
 
 #[cfg(feature = "quic")]
 pub use qucx_quic::QuicPlugin;
+
+#[cfg(feature = "webtransport")]
+pub use qucx_webtransport::WebTransportPlugin;

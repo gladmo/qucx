@@ -11,6 +11,7 @@ pub enum ProtocolKind {
     WebSocket,
     Quic,
     Kcp,
+    WebTransport,
 }
 
 #[derive(Debug, Clone)]
