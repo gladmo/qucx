@@ -3,7 +3,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use bytes::Bytes;
+use bytes::{Bytes, BytesMut};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::Mutex;
@@ -73,7 +73,12 @@ async fn handle_connection(stream: TcpStream, handler: Handler) -> Result<()> {
             Err(e) => return Err(Error::Io(e)),
         }
         let len = u32::from_be_bytes(len_buf) as usize;
-        let mut data = vec![0u8; len];
+        const MAX_MSG: usize = 64 * 1024 * 1024; // 64 MiB
+        if len > MAX_MSG {
+            return Err(Error::Protocol(format!("message too large: {len} bytes")));
+        }
+        let mut data = BytesMut::with_capacity(len);
+        data.resize(len, 0);
         match reader.read_exact(&mut data).await {
             Ok(_) => {}
             Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => break,

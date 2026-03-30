@@ -89,6 +89,10 @@ async fn handle_stream(
             Err(_) => break,
         }
         let len = u32::from_be_bytes(len_buf) as usize;
+        const MAX_MSG: usize = 64 * 1024 * 1024; // 64 MiB
+        if len > MAX_MSG {
+            return Err(Error::Protocol(format!("message too large: {len} bytes")));
+        }
         let mut data_buf = vec![0u8; len];
         match recv.read_exact(&mut data_buf).await {
             Ok(()) => {}
