@@ -29,6 +29,11 @@ qucx-kcp = { path = "crates/qucx-kcp", optional = true }
 qucx-quic = { path = "crates/qucx-quic", optional = true }
 tokio = { version = "1", features = ["full"] }
 
+[dev-dependencies]
+tokio-tungstenite = "0.26"
+futures-util = "0.3"
+bytes = "1"
+
 [[example]]
 name = "echo_server"
 path = "examples/echo_server.rs"

@@ -32,7 +32,9 @@ struct KcpOutput {
 
 impl Write for KcpOutput {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        let _ = self.tx.try_send(buf.to_vec());
+        if let Err(e) = self.tx.try_send(buf.to_vec()) {
+            eprintln!("[qucx-kcp] failed to queue KCP output packet: {e}");
+        }
         Ok(buf.len())
     }
 

@@ -529,12 +529,15 @@ dependencies = [
 name = "qucx"
 version = "0.1.0"
 dependencies = [
+ "bytes",
+ "futures-util",
  "qucx-core",
  "qucx-kcp",
  "qucx-quic",
  "qucx-tcp",
  "qucx-websocket",
  "tokio",
+ "tokio-tungstenite",
 ]
 
 [[package]]

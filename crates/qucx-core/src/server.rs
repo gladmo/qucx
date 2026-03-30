@@ -27,13 +27,13 @@ impl ServerBuilder {
         ServerBuilder { entries: Vec::new() }
     }
 
-    pub fn bind<P: ProtocolPlugin>(mut self, plugin: P, addr: impl ToSocketAddrs) -> Self {
-        let addr = addr
+    pub fn bind<P: ProtocolPlugin>(mut self, plugin: P, addr: impl ToSocketAddrs + std::fmt::Debug) -> Self {
+        let resolved = addr
             .to_socket_addrs()
-            .expect("invalid address: could not resolve")
+            .unwrap_or_else(|e| panic!("could not resolve address {addr:?}: {e}"))
             .next()
-            .expect("invalid address: no socket addresses resolved");
-        self.entries.push((Box::new(plugin), addr));
+            .unwrap_or_else(|| panic!("address {addr:?} resolved to no socket addresses"));
+        self.entries.push((Box::new(plugin), resolved));
         self
     }
 
