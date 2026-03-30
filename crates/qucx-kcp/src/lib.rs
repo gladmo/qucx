@@ -130,6 +130,7 @@ async fn run_kcp_session(args: KcpSessionArgs) {
         }
     });
 
+    let mut recv_buf = vec![0u8; 65536];
     loop {
         tokio::select! {
             // Receive a UDP packet from the peer and feed it into KCP
@@ -140,11 +141,10 @@ async fn run_kcp_session(args: KcpSessionArgs) {
                 }
                 let _ = k.update(now_ms());
                 // Try to read complete messages from KCP
-                let mut buf = vec![0u8; 65536];
                 loop {
-                    match k.recv(&mut buf) {
+                    match k.recv(&mut recv_buf) {
                         Ok(n) => {
-                            let data = Bytes::copy_from_slice(&buf[..n]);
+                            let data = Bytes::copy_from_slice(&recv_buf[..n]);
                             let message = Message {
                                 id,
                                 protocol: ProtocolKind::Kcp,

@@ -71,7 +71,8 @@ async fn handle_connection(
     // Spawn writer task
     tokio::spawn(async move {
         while let Some(data) = rx.recv().await {
-            if ws_sender.send(WsMessage::Binary(data)).await.is_err() {
+            if let Err(e) = ws_sender.send(WsMessage::Binary(data)).await {
+                eprintln!("[qucx-websocket] send error: {e}");
                 break;
             }
         }
