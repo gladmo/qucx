@@ -1,0 +1,13 @@
+[package]
+name = "qucx-quic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+qucx-core = { path = "../qucx-core" }
+tokio = { version = "1", features = ["full"] }
+bytes = "1"
+async-trait = "0.1"
+quinn = { version = "0.11", features = ["rustls-ring"] }
+rcgen = "0.13"
+rustls = { version = "0.23", features = ["ring"] }

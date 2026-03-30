@@ -1,0 +1,34 @@
+[workspace]
+resolver = "2"
+members = [
+    ".",
+    "crates/qucx-core",
+    "crates/qucx-tcp",
+    "crates/qucx-websocket",
+    "crates/qucx-kcp",
+    "crates/qucx-quic",
+]
+
+[package]
+name = "qucx"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["tcp", "websocket", "kcp", "quic"]
+tcp = ["dep:qucx-tcp"]
+websocket = ["dep:qucx-websocket"]
+kcp = ["dep:qucx-kcp"]
+quic = ["dep:qucx-quic"]
+
+[dependencies]
+qucx-core = { path = "crates/qucx-core" }
+qucx-tcp = { path = "crates/qucx-tcp", optional = true }
+qucx-websocket = { path = "crates/qucx-websocket", optional = true }
+qucx-kcp = { path = "crates/qucx-kcp", optional = true }
+qucx-quic = { path = "crates/qucx-quic", optional = true }
+tokio = { version = "1", features = ["full"] }
+
+[[example]]
+name = "echo_server"
+path = "examples/echo_server.rs"
