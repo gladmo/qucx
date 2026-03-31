@@ -77,11 +77,13 @@ async fn main() {
     let server_addr: std::net::SocketAddr = "127.0.0.1:9003".parse().unwrap();
     println!("[quic_client] connecting to {server_addr}");
 
-    // Build a client config that skips TLS certificate verification
-    let tls_config = rustls::ClientConfig::builder()
+    // Build a client config that skips TLS certificate verification and
+    // advertises the same ALPN protocols the server accepts ("h3" / "quic").
+    let mut tls_config = rustls::ClientConfig::builder()
         .dangerous()
         .with_custom_certificate_verifier(Arc::new(SkipCertVerification))
         .with_no_client_auth();
+    tls_config.alpn_protocols = vec![b"quic".to_vec()];
 
     let client_config = ClientConfig::new(Arc::new(
         quinn::crypto::rustls::QuicClientConfig::try_from(tls_config).unwrap(),
