@@ -1,0 +1,12 @@
+[package]
+name = "qucx-websocket"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+qucx-core = { path = "../qucx-core" }
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.26"
+futures-util = "0.3"
+bytes = "1"
+async-trait = "0.1"
