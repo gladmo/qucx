@@ -13,6 +13,15 @@ use qucx_core::{
     Result,
 };
 
+/// ALPN protocols advertised by the QUIC server.
+///
+/// - `"h3"` — standard HTTP/3 ALPN used by quic-go, browsers, and most modern clients.
+/// - `"quic"` — used by Quinn's own examples and some other Rust clients.
+///
+/// Advertising both allows interoperation with the widest range of clients without
+/// requiring them to agree on a single protocol label.
+const ALPN_PROTOCOLS: &[&[u8]] = &[b"h3", b"quic"];
+
 static CONNECTION_COUNTER: AtomicU64 = AtomicU64::new(1);
 
 pub struct QuicPlugin;
@@ -67,7 +76,21 @@ fn make_server_config() -> std::result::Result<ServerConfig, Box<dyn std::error:
     let certified_key = rcgen::generate_simple_self_signed(vec!["localhost".into()])?;
     let cert_der = CertificateDer::from(certified_key.cert);
     let priv_key = PrivatePkcs8KeyDer::from(certified_key.key_pair.serialize_der());
-    let server_config = ServerConfig::with_single_cert(vec![cert_der], priv_key.into())?;
+
+    // Build a rustls ServerConfig manually so we can set the ALPN protocol list.
+    // Without this, clients that negotiate ALPN (e.g. quic-go with "h3") will
+    // receive a TLS no_application_protocol alert (CRYPTO_ERROR 0x178).
+    let mut tls_config = rustls::ServerConfig::builder()
+        .with_no_client_auth()
+        .with_single_cert(vec![cert_der], priv_key.into())?;
+    tls_config.alpn_protocols = ALPN_PROTOCOLS
+        .iter()
+        .map(|p| p.to_vec())
+        .collect();
+
+    let server_config = ServerConfig::with_crypto(Arc::new(
+        quinn::crypto::rustls::QuicServerConfig::try_from(tls_config)?,
+    ));
     Ok(server_config)
 }
 
