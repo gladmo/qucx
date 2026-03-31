@@ -2,6 +2,12 @@ use qucx::{KcpPlugin, QuicPlugin, Server, TcpPlugin, WebSocketPlugin, WebTranspo
 
 #[tokio::main]
 async fn main() -> qucx::Result<()> {
+    // rustls 0.23+ requires an explicit CryptoProvider when multiple backends are
+    // available. Install the ring backend before any TLS-using plugin starts.
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .expect("failed to install ring CryptoProvider");
+
     println!("Starting echo server on all protocols:");
     println!("  TCP           → 0.0.0.0:9001");
     println!("  WebSocket     → 0.0.0.0:9002  (path: /ws)");
