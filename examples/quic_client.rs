@@ -1,6 +1,6 @@
 //! QUIC echo client example.
 //!
-//! Connects to the qucx echo server on port 8443 using QUIC. Sends a message
+//! Connects to the qucx echo server on port 9003 using QUIC. Sends a message
 //! with 4-byte big-endian length-prefix framing on a bidirectional stream and
 //! prints the echoed reply.
 //!
@@ -69,7 +69,12 @@ impl ServerCertVerifier for SkipCertVerification {
 
 #[tokio::main]
 async fn main() {
-    let server_addr: std::net::SocketAddr = "127.0.0.1:8443".parse().unwrap();
+    // Install the ring crypto provider so rustls knows which backend to use.
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .expect("Failed to install rustls crypto provider");
+
+    let server_addr: std::net::SocketAddr = "127.0.0.1:9003".parse().unwrap();
     println!("[quic_client] connecting to {server_addr}");
 
     // Build a client config that skips TLS certificate verification

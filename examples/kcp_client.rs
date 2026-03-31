@@ -1,6 +1,6 @@
 //! KCP echo client example.
 //!
-//! Sends a KCP-framed message to the qucx echo server on UDP port 9090 and
+//! Sends a KCP-framed message to the qucx echo server on UDP port 9004 and
 //! waits for the echoed reply.
 //!
 //! Run the echo server first:
@@ -40,7 +40,7 @@ impl Write for PendingOutput {
 
 #[tokio::main]
 async fn main() {
-    let server_addr: SocketAddr = "127.0.0.1:9090".parse().unwrap();
+    let server_addr: SocketAddr = "127.0.0.1:9004".parse().unwrap();
     println!("[kcp_client] sending to {server_addr}");
 
     // Bind a local UDP socket
@@ -103,12 +103,15 @@ async fn main() {
         });
     }
 
-    // Send the payload via KCP
+    // Send the payload via KCP.
+    // update() must be called first to mark the KCP state as initialised;
+    // it also triggers flush() internally, so an explicit flush() call is
+    // not required afterwards.
     let payload = b"Hello from KCP client!";
     {
         let mut k = kcp.lock().await;
         k.send(payload).unwrap();
-        k.flush().unwrap();
+        // update() sets the internal `updated` flag and calls flush() for us.
         k.update(now_ms()).unwrap();
     }
     println!("[kcp_client] sent {} bytes", payload.len());

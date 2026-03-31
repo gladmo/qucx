@@ -1,6 +1,6 @@
 //! TCP echo client example.
 //!
-//! Connects to the qucx echo server on port 8080, sends a message with
+//! Connects to the qucx echo server on port 9001, sends a message with
 //! 4-byte big-endian length-prefix framing, and prints the echoed reply.
 //!
 //! Run the echo server first:
@@ -14,7 +14,7 @@ use tokio::net::TcpStream;
 
 #[tokio::main]
 async fn main() {
-    let addr = "127.0.0.1:8080";
+    let addr = "127.0.0.1:9001";
     println!("[tcp_client] connecting to {addr}");
 
     let mut stream = TcpStream::connect(addr).await.expect("connect failed");

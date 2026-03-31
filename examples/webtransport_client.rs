@@ -1,7 +1,7 @@
 //! WebTransport echo client example.
 //!
-//! Connects to the qucx echo server on port 4433 via WebTransport (HTTP/3),
-//! sends a datagram, and prints the echoed reply.
+//! Connects to the qucx echo server on port 9005 at path /wt via WebTransport
+//! (HTTP/3), sends a datagram, and prints the echoed reply.
 //!
 //! Certificate verification is disabled because the server uses a self-signed
 //! certificate. Do not do this in production.
@@ -18,7 +18,7 @@ use wtransport::{ClientConfig, Endpoint};
 
 #[tokio::main]
 async fn main() {
-    let url = "https://127.0.0.1:4433";
+    let url = "https://127.0.0.1:9005/wt";
     println!("[wt_client] connecting to {url}");
 
     // Skip certificate verification — the server uses a self-signed cert.
